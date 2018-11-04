@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>TamanhoFamilia.EasyServicing</RootNamespace>
+    <AssemblyName>TamanhoFamilia.EasyServicing</AssemblyName>
   </PropertyGroup>
 
 </Project>
