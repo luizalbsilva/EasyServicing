@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>TamanhoFamilia.EasyServicing</RootNamespace>
+    <AssemblyName>TamanhoFamilia.EasyServicing</AssemblyName>
   </PropertyGroup>
 
 </Project>
