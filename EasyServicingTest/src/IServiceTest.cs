@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using TamanhoFamilia.EasyServicing;
 using Xunit;
 
@@ -126,7 +127,7 @@ namespace TamanhoFamilia.EasyServicingTest
             {
                 this.Service.Start(5);
                 this.Service.RemoveWorkers(6);
-                Thread.Sleep(100);
+                Thread.Sleep(10000);
                 Assert.Equal(ServiceState.IDLE, this.Service.State());
             }
             finally
@@ -161,56 +162,80 @@ namespace TamanhoFamilia.EasyServicingTest
         [Fact]
         public virtual void Restart_StoppedServiceChangesStatus()
         {
-            this.Service.Restart();
-            Assert.Equal(ServiceState.IDLE, this.Service.State());
+            Timeout(200, () => {
+                this.Service.Restart();
+                Assert.Equal(ServiceState.RUNNING, this.Service.State());
+            });
+        }
+
+        private async void Timeout(int time, Action action)
+        {
+            var timeoutTask = Task.Delay(time);
+            var actionTask = Task.Run(action);
+            var r = await Task.WhenAny(actionTask, timeoutTask)   ;
+            Assert.NotEqual(timeoutTask, r);
         }
 
         [Fact]
         public virtual void Restart_StartedServiceMantainsNumberOfWorkers()
         {
-            try
+            Timeout(2000, () =>
             {
-                this.Service.Start(4);
-                this.Service.Restart();
-                Assert.Equal(4, this.Service.ActualWorkers());
-            }
-            finally
-            {
-                this.Service.Stop();
-            }
+                try
+                {
+                    this.Service.Start(4);
+                    this.Service.Restart();
+                    Assert.Equal(4, this.Service.ActualWorkers());
+                }
+                finally
+                {
+                    this.Service.Stop();
+                }
+            });
         }
 
         [Fact]
         public virtual void Restart_StartedServiceAsksForStoppingService()
         {
-            try
-            {
-                this.Service.Start(4);
-                this.StartDelayedJob();
-                this.Service.Restart();
-                Assert.Equal(ServiceState.STOPPING, this.Service.State());
-                this.StopDelayedJob();
+//            Timeout(2000, () =>
+//            {
+                try
+                {
+                    this.Service.Start(4);
+                    this.StartDelayedJob();
+                    new Thread(() => this.Service.Restart()).Start();
+                    Thread.Sleep(10);
+                    Assert.Equal(ServiceState.STOPPING, this.Service.State());
+                    this.StopDelayedJob();
             }
             finally
-            {
-                this.Service.Stop();
-            }
+                {
+                    this.Service.Stop();
+                }
+//            });
         }
 
         [Fact]
         public virtual void Restart_StartedServiceCheckFinalStatus()
         {
-            try
+            Timeout(2000, () => 
             {
-                this.Service.Start(4);
-                this.Service.Restart();
-                Assert.Equal(ServiceState.RUNNING, this.Service.State());
-            }
-            finally
-            {
-                this.Service.Stop();
-            }
+                int c = 0;
+                if (c == 0)
+                    throw new Exception("Dados");
+                try
+                {
+                    this.Service.Start(4);
+                    this.Service.Restart();
+                    Assert.Equal(ServiceState.RUNNING, this.Service.State());
+                }
+                finally
+                {
+                    this.Service.Stop();
+                }
+            });
         }
+
         #endregion
 
         #region State
@@ -319,6 +344,7 @@ namespace TamanhoFamilia.EasyServicingTest
         public virtual void Stop_IDLEService()
         {
             this.Service.Stop();
+            StopDelayedJob();
             Assert.Equal(ServiceState.IDLE, this.Service.State());
         }
         #endregion
