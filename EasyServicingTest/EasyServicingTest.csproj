@@ -5,6 +5,11 @@
 
     <IsPackable>false</IsPackable>
 
+    <ApplicationIcon />
+
+    <OutputType>Library</OutputType>
+
+    <StartupObject />
     <RootNamespace>TamanhoFamilia.EasyServicingTest</RootNamespace>
   </PropertyGroup>
 
