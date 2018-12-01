@@ -7,6 +7,7 @@ using TamanhoFamilia.EasyServicing.ActionService;
 
 namespace TamanhoFamilia.EasyServicingTest.ActionService
 {
+    #region AbstractActionServiceTest
     public class LocalAbstractActionService : AbstractActionService
     {
         public bool Continue { get; set; }
@@ -33,4 +34,28 @@ namespace TamanhoFamilia.EasyServicingTest.ActionService
             Service.Continue = false;
         }
     }
+    #endregion
+
+    #region ActionServiceTest
+    public class ActionServiceTest : IServiceTest<EasyServicing.ActionService.ActionService>
+    {
+        public static bool Continue { get; set; }
+
+        public ActionServiceTest() : base(new EasyServicing.ActionService.ActionService(() =>
+        {
+            while (ActionServiceTest.Continue)
+                Thread.Sleep(10);
+        })) { }
+
+        protected override void StartDelayedJob()
+        {
+            ActionServiceTest.Continue = true;
+        }
+
+        protected override void StopDelayedJob()
+        {
+            ActionServiceTest.Continue = false;
+        }
+    }
+    #endregion
 }
