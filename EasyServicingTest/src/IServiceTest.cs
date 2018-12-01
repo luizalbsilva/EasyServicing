@@ -335,7 +335,7 @@ namespace TamanhoFamilia.EasyServicingTest
             finally
             {
                 StopDelayedJob();
-                Thread.Sleep(10);
+                Thread.Sleep(100);
             }
             Assert.Equal(ServiceState.IDLE, this.Service.State());
         }
