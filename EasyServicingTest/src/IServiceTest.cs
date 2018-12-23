@@ -162,7 +162,7 @@ namespace TamanhoFamilia.EasyServicingTest
         [Fact]
         public virtual void Restart_StoppedServiceChangesStatus()
         {
-            Timeout(200, () => {
+            Timeout(300, () => {
                 this.Service.Restart();
                 Assert.Equal(ServiceState.RUNNING, this.Service.State());
             });
